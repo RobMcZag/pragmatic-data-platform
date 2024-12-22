@@ -1,12 +1,13 @@
--- ingest_semi_structured_into_landing_sql
+{% macro ingest_into_landing_sql(full_table_name, field_count, file_pattern, full_stage_name, full_format_name) %}
 
-{% macro ingest_semi_structured_into_landing_sql(full_table_name, field_definitions, file_pattern, full_stage_name, full_format_name) %}
+{{ pragmatic_data.refresh_stage_sql(full_stage_name) }}
+
 BEGIN TRANSACTION;
 
 COPY INTO {{ full_table_name }}
 FROM (
     SELECT 
-        {{ field_definitions }}, 
+        {% for i in range(1, field_count+1) %}${{i}},{% endfor %}
         
         METADATA$FILENAME               as FROM_FILE,
         METADATA$FILE_ROW_NUMBER        as FILE_ROW_NUMBER,
